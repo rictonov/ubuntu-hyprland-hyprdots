@@ -150,11 +150,71 @@ sudo ninja -C builddir/ install
 sudo systemd-hwdb update
 ```
 
+STEP 4.6 (option) : libdrm (for DRM playback support)
+```
+git clone https://gitlab.freedesktop.org/mesa/drm.git
+```
+```
+cd drm &&
+meson --prefix=/usr builddir/
+```
+```
+ninja -C builddir/
+```
+```
+sudo ninja -C builddir/ install
+```
+
 STEP 5 : YAY ! Manual Installations completed, now you can run script :
 clone and execute -
 
 STEP 5A : Build Hyprland and utilities
 
+* This step 5A can be perform in either of two ways or even a mix of both !
+
+  ### Method 1 : Manual
+
+* We get Source
+```
+wget https://github.com/hyprwm/Hyprland/releases/download/v0.29.0/source-v0.29.0.tar.gz &&
+tar -xvf source-v0.29.0.tar.gz
+```
+* you will need to change the folder permisions due to the use of sudo, so in the future you can acces and modify the folder
+```
+chmod a+rw hyprland-source &&
+cd hyprland-source/
+```
+```
+sudo make install
+```
+* Now that Hyprland is installed, we can download all utilities
+* I recommend using Nix: the package manager
+```shell
+sh <(curl -L https://nixos.org/nix/install) --no-daemon
+```
+* now restart shell/terminal and install using 
+```
+nix-env -iA nixpkgs.swww
+```
+```
+nix-env -iA nixpkgs.xdg-desktop-portal-hyprland
+```
+```
+nix-env -iA nixpkgs.swappy
+```
+```
+nix-env -iA nixpkgs.wl-clipboard
+```
+```
+nix-env -iA nixpkgs.swaylock
+nix-env -iA nixpkgs.swaylock-effects
+```
+```
+nix-env -iA nixpkgs.pokemon-colorscripts-mac
+```
+* done, now skip to Step 5B
+
+### Method 2 : Installation script
 ```shell
 sudo apt install git
 git clone https://github.com/Senshi111/debian-hyprland-hyprdots.git
@@ -169,26 +229,19 @@ which Hyprland && which  swww &&  which  swappy && which  wl-copy && which  sway
 >>> I was not able to build swww and xdg-desktop-portal-hyprland through installation script; so I installed it via nix-env
 * What is nix-env ? -> https://www.youtube.com/watch?v=BwEIXIjLTNs
 
-```
-nix-env -iA nixpkgs.swww
-```
-```
-nix-env -iA nixpkgs.xdg-desktop-portal-hyprland
-```
-
-> nix-env installation for other packages (if install_all.sh script could not install)
-```
-nix-env -iA nixpkgs.swappy
-```
-```
-nix-env -iA nixpkgs.wl-clipboard
-```
-```
-nix-env -iA nixpkgs.swaylock
-nix-env -iA nixpkgs.swaylock-effects
-```
 > Why not install even Hyprland via nix-env?
 > > Answer : does not work
+
+### Advice
+
+* install a polkit agent (for example : mate-polkit), you might want to enable the service at startup (see Hyprland Wiki)
+```shell
+sudo apt-get install mate-polkit-bin
+```
+* If you are going to Rice with the script below, beware that your waybar version is outdated; you can install waybar via nix-env to get the latest version
+  ```shell
+  nix-env -iA nixpkgs.waybar
+  ```
 
 STEP 5B : Get Themes
 
@@ -211,6 +264,8 @@ cd ~/debian-hyprland-hyprdots/Theme/Scripts
 >```shell
 >./install.sh custom_apps.lst
 >```
+
+* gdm not found? edit the script and replace gdm with your display manager (sddm recommended)
 
 Please reboot after the install script completes and takes you to sddm login screen (or black screen) for the first time.   
 For more details, please refer [installation.md](https://github.com/prasanthrangan/hyprdots/blob/main/installation.md)
